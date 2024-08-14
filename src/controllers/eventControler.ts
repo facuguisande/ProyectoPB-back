@@ -1,12 +1,11 @@
-import { Request, Response } from 'express';
-import { IEvents, eventModel } from  '../models/eventModel';
-import { Error } from 'mongoose';
-import { error } from 'console';
+import { Request, Response } from "express";
+import { IEvents, eventModel } from "../models/eventModel";
+import { Error } from "mongoose";
+import { error } from "console";
 
 // Crear un nuevo evento
 export async function createEvent(req: Request, res: Response): Promise<void> {
   try {
-
     const newEvent: IEvents = await eventModel.create(req.body);
     res.status(201).json(newEvent);
   } catch (err) {
@@ -15,7 +14,10 @@ export async function createEvent(req: Request, res: Response): Promise<void> {
 }
 
 // Obtener todos los eventos de un cliente
-export async function getEventsByClient(req: Request, res: Response): Promise<void> {
+export async function getEventsByClient(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     const { clientName, clientSurname } = req.params;
     const events = await eventModel.find({ clientName, clientSurname });
@@ -25,13 +27,29 @@ export async function getEventsByClient(req: Request, res: Response): Promise<vo
   }
 }
 
+//Listar todos los eventos
+
+export const getAllEvents = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const personal: IEvents[] = await eventModel.find();
+    res.status(200).json(personal);
+  } catch (err) {
+    res.status(400).json({ message: (err as Error).message });
+  }
+};
+
 // Actualizar un evento
 export async function updateEvent(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
-    const updatedEvent = await eventModel.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedEvent = await eventModel.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     if (!updatedEvent) {
-      res.status(404).json({ message: 'Evento no encontrado' });
+      res.status(404).json({ message: "Evento no encontrado" });
       return;
     }
     res.status(200).json(updatedEvent);
@@ -46,15 +64,11 @@ export async function deleteEvent(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const deletedEvent = await eventModel.findByIdAndDelete(id);
     if (!deletedEvent) {
-      res.status(404).json({ message: 'Evento no encontrado' });
+      res.status(404).json({ message: "Evento no encontrado" });
       return;
     }
-    res.status(200).json({ message: 'Evento eliminado' });
+    res.status(200).json({ message: "Evento eliminado" });
   } catch (err) {
     res.status(400).json({ message: (err as Error).message });
   }
 }
-
-
-
-
